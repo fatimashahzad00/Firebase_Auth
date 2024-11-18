@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Blog</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>My Blog</h1>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="signup.html">Sign Up</a></li>
+                <li><a href="account.html" id="accountLink" style="display: none;">Account</a></li>
+                <li><a href="#" id="logoutButton" style="display: none;">Logout</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <h1 class="heading" style="font-size: 36px; text-align: center; margin-top: 50px;">Welcome to My Blog</h1>
+
+    <main>
+        <section id="blogPosts">
+            <!-- Blog posts will be dynamically added here -->
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2023 My Blog. All rights reserved.</p>
+    </footer>
+
+    <script type="module" src="firebaseapp.js"></script>
+    <script type="module" src="auth.js"></script>
+    <script type="module" src="logout.js"></script>
+</body>
+</html>
