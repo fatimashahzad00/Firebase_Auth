@@ -7,12 +7,23 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
+    <header id="navbar1">
         <nav>
             <h1>My Blog</h1>
             <ul>
-                <li><a href="index.html">Home</a></li>
-                <li><a href="account.html">Account</a></li>
+                <li><a href="index.html" id="home">Home</a></li>
+                <li><a href="login.html" id="loginLink">Login</a></li>
+                <li><a href="signup.html" id="signupLink">Sign Up</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <header id="navbar2">
+        <nav>
+            <h1>My Blog</h1>
+            <ul>
+                <li><a href="index.html" id="home">Home</a></li>
+                <li><a href="account.html" id="accountLink">Account</a></li>
                 <li><a href="#" id="logoutButton">Logout</a></li>
             </ul>
         </nav>
@@ -21,8 +32,39 @@
     <main>
         <h2>My Account</h2>
         <div id="userInfo">
-            <!-- User information will be dynamically added here -->
+            <p style="font-weight: bold;">ID: <span id="userID" style="font-weight: normal;"></span></p>
+
+            <p style="font-weight: bold;">Name: <span style="font-weight: normal;" id="displayName"></span></p>
+
+            <p style="font-weight: bold;">Email: <span style="font-weight: normal;" id="email"></span>
+
+            <p style="font-weight: bold;">Email Verified: <span style="font-weight: normal;" id="emailVerified"></span>
+
         </div>
+
+        <h3>Update Profile</h3>
+        <form id="updateProfileForm">
+            <input type="text" id="displayName" placeholder="Display Name">
+            <button type="submit">Update Profile</button>
+        </form>
+
+        <h3>Update Email</h3>
+        <form id="updateEmailForm">
+            <input type="email" id="newEmail" placeholder="New Email" required>
+            <button type="submit">Update Email</button>
+        </form>
+
+        <h3>Verify Email</h3>
+        <button id="verifyEmailButton">Send Verification Email</button>
+
+        <h3>Update Password</h3>
+        <form id="updatePasswordForm">
+            <input type="password" id="newPassword" placeholder="New Password" required>
+            <button type="submit">Update Password</button>
+        </form>
+
+        <h3>Delete Account</h3>
+        <button id="deleteAccountButton">Delete Account</button>
     </main>
 
     <footer>
@@ -31,7 +73,7 @@
 
 
     <script src="firebaseapp.js" type="module"></script>
-    <script type="module" src="logout.js"></script>
+    <script src="auth.js" type="module" ></script>
     <script src="account.js" type="module"></script>
 </body>
 </html>

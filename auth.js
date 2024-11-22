@@ -1,8 +1,9 @@
-import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from './firebaseapp.js';
-import { updateProfile } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js"; 
+import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from './firebaseapp.js';
+import { updateProfile, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
 
-
+const forgetPasswordBtn = document.getElementById('forgetPassword');
 const signUpForm = document.querySelector('#signupForm');
+const LoginForm = document.querySelector('#loginForm');
 const errorModal = document.getElementById('errorModal');
 const errorMessage = document.getElementById('errorMessage');
 const closeModal = document.getElementById('closeModal');
@@ -45,12 +46,12 @@ if (signUpForm) {
                 });
             })
             .then(() => {
-                // console.log('User account created successfully!');
-                showSuccess('User account created successfully!');
-                // Redirect to login page
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
+                const authUser = auth.currentUser;
+                return sendEmailVerification(authUser)
+            })
+            .then(() => {
+                showSuccess('User account created successfully! Please check your email to verify your account.');
+                waitForEmailVerification();
             })
             .catch((error) => {
                 const errorMessage = error.message;
@@ -58,6 +59,26 @@ if (signUpForm) {
             });
 
     })
+
+    function waitForEmailVerification() {
+        const user = user.currentUser;
+        const intervalId = setInterval(() => {
+            user.reload().then(() => {
+                if (user.emailVerified) {
+                    clearInterval(intervalId);
+                    showSuccess('Email verified! You can now login.');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 1000)
+                }
+            })
+        }, 3000);
+
+        setTimeout(() => {
+            clearInterval(intervalId);
+            showError('Email verification timed out. Please try again.');
+        }, 300000)
+    }
 
     closeModal.onclick = function () {
         errorModal.style.display = "none";
@@ -99,7 +120,7 @@ function showSuccess(message) {
 }
 
 // Login Form from firebase
-const LoginForm = document.querySelector('#loginForm');
+
 
 if (LoginForm) {
     LoginForm.addEventListener('submit', function (e) {
@@ -110,19 +131,73 @@ if (LoginForm) {
 
         signInWithEmailAndPassword(auth, email, password)
             .then((userCredential) => {
-                // Login in 
                 const user = userCredential.user;
                 console.log(user);
-                showSuccess('Login successful!')
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1000);
-
+                if (user.emailVerified) {
+                    showSuccess('Login successful!')
+                    setTimeout(() => {
+                        window.location.href = 'index.html';
+                    }, 1000);
+                } else{
+                    showError('Please verify your email before logging in.');
+                    sendEmailVerification(user)
+                        .then(() => {
+                            showSuccess('Email verification sent! Please check your email to verify your account.');
+                            waitForEmailVerification();
+                        })
+                        .catch((error) => {
+                             const errorMessage = error.message;
+                             showError('Failed to send verification email: ' + errorMessage);
+                         });
+                }
             })
             .catch((error) => {
                 const errorMessage = error.message;
                 showError('Signup failed: ' + errorMessage);
             });
+        })
+}
 
-    })
+function updateNavigation(user) {
+    const nav1 = document.getElementById('navbar1');
+    const nav2 = document.getElementById('navbar2');
+
+    if (user) {
+        // User is signed in
+        if (nav1) nav1.style.display = 'none';
+        if (nav2) nav2.style.display = 'block';
+    } else {
+        // No user is signed in
+        if (nav1) nav1.style.display = 'block';
+        if (nav2) nav2.style.display = 'none';
+    }
+}
+
+// Add an auth state listener
+auth.onAuthStateChanged((user) => {
+    updateNavigation(user);
+});
+
+// Call updateNavigation initially
+updateNavigation(auth.currentUser);
+
+if (forgetPasswordBtn) {
+    forgetPasswordBtn.addEventListener('click', function() {
+        const email = prompt("Please enter your email address:");
+        if (email) {
+            if (!isValidEmail(email)) {
+                showError('Please enter a valid email address.');
+                return;
+            }
+            
+            sendPasswordResetEmail(auth, email)
+                .then(() => {
+                    showSuccess('Password reset email sent. Please check your inbox.');
+                })
+                .catch((error) => {
+                    const errorMessage = error.message;
+                    showError('Failed to send password reset email: ' + errorMessage);
+                });
+        }
+    });
 }
