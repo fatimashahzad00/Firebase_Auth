@@ -23,8 +23,23 @@
         <form id="loginForm">
             <input type="email" id="loginEmail" placeholder="Email" required>
             <input type="password" id="loginPassword" placeholder="Password" required>
+            <p>Dont have an account? <a href="signup.html" style=" font-size: 15px; color: blue;">Sign Up</a></p>
             <button type="submit">Login</button>
-            <button type="submit" style="margin-top: 5px;" id="forgetPassword">Forget Password</button>
+            <span id="forgetPassword" style=" font-size: 15px; color: blue; margin-left: 5px;  text-decoration: underline;">Forget Password?</span>
+            <br>
+            <button id="googleSignIn" style="margin-top: 5px;">Sign in with Google</button>
+        </form>
+       
+        <h3>Phone Authentication</h3>
+        <form id="phoneSignInForm">
+            <input type="tel" id="phoneNumber" placeholder="Phone Number (with country code)" required>
+            <div id="recaptcha-container"></div>
+            <button type="submit" id="phoneSignInButton" disabled>Send Verification Code</button>
+        </form>
+
+        <form id="phoneVerificationForm" style="display: none;">
+            <input type="text" id="verificationCode" placeholder="Enter verification code" required>
+            <button type="submit">Verify Code</button>
         </form>
     </main>
     <div id="errorModal" class="modal">

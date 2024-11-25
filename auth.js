@@ -1,7 +1,11 @@
 import { auth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged } from './firebaseapp.js';
 import { updateProfile, sendPasswordResetEmail, sendEmailVerification } from "https://www.gstatic.com/firebasejs/11.0.2/firebase-auth.js";
+import { signInWithGoogle } from './googleAuth.js';
+import { setupRecaptcha, signInWithPhone, verifyCode, resetRecaptcha } from './phoneAuth.js';
+
 
 const forgetPasswordBtn = document.getElementById('forgetPassword');
+const googleSignInBtn = document.getElementById('googleSignIn');
 const signUpForm = document.querySelector('#signupForm');
 const LoginForm = document.querySelector('#loginForm');
 const errorModal = document.getElementById('errorModal');
@@ -9,6 +13,8 @@ const errorMessage = document.getElementById('errorMessage');
 const closeModal = document.getElementById('closeModal');
 const successModal = document.getElementById('successModal');
 const successMessage = document.getElementById('successMessage');
+const phoneSignInForm = document.getElementById('phoneSignInForm');
+const phoneVerificationForm = document.getElementById('phoneVerificationForm');
 
 
 if (signUpForm) {
@@ -72,7 +78,7 @@ if (signUpForm) {
                     }, 1000)
                 }
             })
-        }, 3000);
+        }, 1000);
 
         setTimeout(() => {
             clearInterval(intervalId);
@@ -198,6 +204,56 @@ if (forgetPasswordBtn) {
                     const errorMessage = error.message;
                     showError('Failed to send password reset email: ' + errorMessage);
                 });
+        }
+    });
+}
+
+// Sign in with Googlg
+if (googleSignInBtn) {
+    googleSignInBtn.addEventListener('click', async function(e) {
+        e.preventDefault();
+        const result = await signInWithGoogle();
+        if (result.success) {
+            showSuccess('Google sign-in successful!');
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        } else {
+            showError('Google sign-in failed: ' + result.errorMessage);
+        }
+    });
+}
+
+// Phone number sign-in
+if (phoneSignInForm) {
+    setupRecaptcha();
+    phoneSignInForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        const result = await signInWithPhone(phoneNumber);
+        if (result.success) {
+          console.log(result.message);
+            phoneSignInForm.style.display = 'none';
+            phoneVerificationForm.style.display = 'block';
+        } else {
+            showError(result.message);
+            resetRecaptcha();
+        }
+    });
+}
+
+if (phoneVerificationForm) {
+    phoneVerificationForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const code = document.getElementById('verificationCode').value;
+        const result = await verifyCode(code);
+        if (result.success) {
+            showSuccess(result.message);
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1000);
+        } else {
+            showError(result.message);
         }
     });
 }

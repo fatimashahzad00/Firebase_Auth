@@ -115,4 +115,16 @@ button:hover {
     text-decoration: none;
     cursor: pointer;
 }
+#phoneSignInForm,
+#phoneVerificationForm {
+    max-width: 400px;
+    margin: 20px auto;
+}
 
+#recaptcha-container {
+    margin: 10px 0;
+}
+
+#phoneSignInButton {
+    margin-top: 10px;
+}
